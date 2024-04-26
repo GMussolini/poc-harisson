@@ -124,6 +124,7 @@ mat-sidenav, mat-sidenav-content {
   padding: 7%;
   margin: 10px auto;
   width: 55%;
+  min-width: 55%;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -133,6 +134,7 @@ mat-sidenav, mat-sidenav-content {
 .chat-container-wrapper {
   max-height: 70vh;
   overflow-y: auto;
+  min-width: 55%;
 }
 
 .chat-container-wrapper::-webkit-scrollbar {

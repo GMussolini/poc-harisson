@@ -5,21 +5,26 @@ import { BuddyChatService } from '../../services/buddy-chat.service';
 import { ModalResumoReferenciaComponent } from '../../components/modal-resumo-referencia/modal-resumo-referencia.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ResponseMedModel, ResponsePocModel } from '../../types/response-model.type';
+import {
+  ResponseMedModel,
+  ResponsePocModel,
+} from '../../types/response-model.type';
 
 @Component({
   selector: 'app-buddy-chat',
   templateUrl: './buddy-chat.component.html',
   styleUrls: ['./buddy-chat.component.css'],
 })
-export class BuddyChatComponent implements AfterViewInit{
-  constructor(private _buddyService: BuddyChatService, private _dialog: MatDialog, private sanitizer: DomSanitizer)
-  {
-  }
+export class BuddyChatComponent implements AfterViewInit {
+  constructor(
+    private _buddyService: BuddyChatService,
+    private _dialog: MatDialog,
+    private sanitizer: DomSanitizer
+  ) {}
 
   async ngAfterViewInit(): Promise<void> {
-    this.sessionIdMed = await this._buddyService.startSessionMed() || '';
-    this.sessionIdHarrison = await this._buddyService.startSessionPoc() || '';
+    this.sessionIdMed = (await this._buddyService.startSessionMed()) || '';
+    this.sessionIdHarrison = (await this._buddyService.startSessionPoc()) || '';
   }
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -31,61 +36,63 @@ export class BuddyChatComponent implements AfterViewInit{
   isLoading = false;
   sessionIdMed: string = '';
   sessionIdHarrison: string = '';
-  responseMed: ResponseMedModel = {resposta: ''};
-  responsePoc: ResponsePocModel = {resposta: ''};
+  responseMed: ResponseMedModel = { resposta: '' };
+  responsePoc: ResponsePocModel = { resposta: '' };
 
   toggleSidenav(): void {
     this.sidenav.toggle();
   }
   async OnAddNewChat(): Promise<void> {
     this.isLoading = true;
-    this.sessionIdHarrison = await this._buddyService.startSessionPoc() || '';
-    this.sessionIdMed = await this._buddyService.startSessionMed() || '';
+    this.sessionIdHarrison = (await this._buddyService.startSessionPoc()) || '';
+    this.sessionIdMed = (await this._buddyService.startSessionMed()) || '';
     this.isLoading = false;
   }
   async OnSendPrompt(): Promise<void> {
     this.isLoading = true;
 
     let messageMed: MessageMed = {
-      userName: 'Cristhina',
+      userName: 'User',
       userImage: './../../../../../assets/user-image.jpg',
       date: new Date(),
-      text: this.prompt
+      text: this.prompt,
     };
 
     let messagePoc: MessagePoc = {
-      userName: 'Cristhina',
+      userName: 'User',
       userImage: './../../../../../assets/user-image.jpg',
       date: new Date(),
-      text: this.prompt
+      text: this.prompt,
     };
 
-    this.messagesMed.push(messageMed)
-    this.messagesPoc.push(messagePoc)
+    this.messagesMed.push(messageMed);
+    this.messagesPoc.push(messagePoc);
 
     await this.getResponseModel(this.prompt);
 
     let messageBotMed: MessageMed = {
-      userName: 'Thoth',
-      userImage: './../../../../../assets/ilustracao-de-uma-arvore-generativa-3d-isometrica-ai_833691-41-removebg-preview.png',
+      userName: 'Medrobot',
+      userImage:
+        './../../../../../assets/logo-medgrupo.jpg',
       date: new Date(),
-      text: this.responseMed.resposta
+      text: this.responseMed.resposta,
     };
 
     let messageBotPoc: MessageMed = {
-      userName: 'Thoth',
-      userImage: './../../../../../assets/ilustracao-de-uma-arvore-generativa-3d-isometrica-ai_833691-41-removebg-preview.png',
+      userName: 'Medrobot',
+      userImage:
+        './../../../../../assets/logo-medgrupo.jpg',
       date: new Date(),
-      text: this.responsePoc.resposta
+      text: this.responsePoc.resposta,
     };
 
-    this.messagesMed.push(messageBotMed)
-    this.messagesPoc.push(messageBotPoc)
+    this.messagesMed.push(messageBotMed);
+    this.messagesPoc.push(messageBotPoc);
   }
 
   openDialog(resume: string): void {
     this._dialog.open(ModalResumoReferenciaComponent, {
-      data: { resume }
+      data: { resume },
     });
   }
 
@@ -94,10 +101,17 @@ export class BuddyChatComponent implements AfterViewInit{
   }
 
   private async getResponseModel(promp: string): Promise<void> {
-
-    if(promp !== ''){
-      this.responsePoc.resposta = await this._buddyService.streamAwnserPoc(this.sessionIdMed, promp);
-      this.responseMed.resposta = await this._buddyService.streamAwnserMed(this.sessionIdMed, promp).finally(() => {this.isLoading = false;});
+    if (promp !== '') {
+      this.responsePoc.resposta = await this._buddyService.streamAwnserPoc(
+        this.sessionIdMed,
+        promp
+      );
+      this.responseMed.resposta = await this._buddyService
+        .streamAwnserMed(this.sessionIdMed, promp)
+        .finally(() => {
+          this.prompt = '';
+          this.isLoading = false;
+        });
 
       console.log(this.responsePoc.resposta);
       console.log(this.responseMed.resposta);
