@@ -1,0 +1,87 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened="true">
+    <mat-nav-list class="list-itens">
+      <button (click)="OnAddNewChat()" class="button-add-chat">
+        <mat-icon fontIcon="add"></mat-icon>
+        Nova Conversa
+      </button>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content class="main-content">
+    <app-loading [isLoading]="isLoading"></app-loading>
+    <button class="button-menu" mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <section class="section-content">
+      <header class="header-content">
+        <img
+          class="logo-content"
+          src="./../../../../../assets/logo-medgrupo.jpg"
+        />
+        <div class="search-container">
+          <h1 class="title">
+            HARISSON
+          </h1>
+          <h1 class="title">
+            |
+          </h1>
+          <h1 class="title">
+            MEDGRUPO
+          </h1>
+        </div>
+        <img
+          class="profile-content"
+          src="./../../../../../assets/user-image.jpg"
+        />
+      </header>
+
+      <div class="divide-chat">
+        <div class="chat-container-wrapper">
+          <div class="chat-container">
+            <div *ngFor="let message of messagesPoc" class="message" >
+              <img [src]="message.userImage" alt="{{ message.userName }}" />
+              <div class="message-content">
+                <div class="message-header">
+                  <strong>{{ message.userName }}</strong>
+                  <span class="message-date">{{
+                    message.date | date : "short"
+                  }}</span>
+                </div>
+                <p>{{message.text}}</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-container-wrapper">
+          <div class="chat-container">
+            <div *ngFor="let message of messagesMed" class="message" >
+              <img [src]="message.userImage" alt="{{ message.userName }}" />
+              <div class="message-content">
+                <div class="message-header">
+                  <strong>{{ message.userName }}</strong>
+                  <span class="message-date">{{
+                    message.date | date : "short"
+                  }}</span>
+                </div>
+                <p>{{message.text}}</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-wrapper">
+        <textarea
+          [(ngModel)]="prompt"
+          type="text"
+          class="search-box"
+        ></textarea>
+        <button [disabled]="prompt == '' || isProcess" (click)="OnSendPrompt()" class="search-button">
+          <span class="search-icon"><mat-icon fontIcon="send"></mat-icon></span>
+        </button>
+      </div>
+    </section>
+  </mat-sidenav-content>
+</mat-sidenav-container>

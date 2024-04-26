@@ -1,0 +1,22 @@
+.modal-content {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  font-size: 16px;
+  position: relative;
+}
+
+.modal-content p {
+  margin-top: 3%;
+}
+
+.close-button {
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  top: 0;
+  left: 0;
+  padding: 0.7%;
+  cursor: pointer;
+}
