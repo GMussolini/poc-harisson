@@ -13,7 +13,7 @@ export class BuddyChatService {
   async startSessionPoc(): Promise<string> {
     const request: BuddyTalkRequest = {
       buddyApi: BuddyTalkApi.ThothApi,
-      resource: `chat/start-session/${1}`,
+      resource: `chat/start-session/${1}/${'poc_livro'}`,
     };
 
     try {
