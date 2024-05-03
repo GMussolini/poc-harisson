@@ -6,15 +6,17 @@ import BuddyTalkResponse from '../interfaces/buddy-talk-response.interface';
 import BuddyTalkRequest from '../interfaces/buddy-talk-request.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BuddyTalkApiService {
   constructor(private readonly http: HttpClient) {}
 
   private getBuddyApi(buddyApi: BuddyTalkApi): string {
     switch (buddyApi) {
-      case BuddyTalkApi.ThothApi:
-        return environment.thothApi;
+      case BuddyTalkApi.LangchainApi:
+        return environment.langchainApi;
+      case BuddyTalkApi.CognisyncApi:
+        return environment.cognisyncApi;
       default:
         throw new Error('Invalid API');
     }
@@ -33,9 +35,13 @@ export class BuddyTalkApiService {
     return response;
   }
 
-  async patch<TData>(request: BuddyTalkRequest): Promise<BuddyTalkResponse<TData>> {
+  async patch<TData>(
+    request: BuddyTalkRequest
+  ): Promise<BuddyTalkResponse<TData>> {
     const url = this.getUrl(request);
-    const response = await this.http.patch<BuddyTalkResponse<TData>>(url, request.body).toPromise();
+    const response = await this.http
+      .patch<BuddyTalkResponse<TData>>(url, request.body)
+      .toPromise();
     if (!response) {
       throw new Error('nenhum retorno da API.');
     }
@@ -51,24 +57,32 @@ export class BuddyTalkApiService {
     return response;
   }
 
-  async put<TData>(request: BuddyTalkRequest): Promise<BuddyTalkResponse<TData>> {
+  async put<TData>(
+    request: BuddyTalkRequest
+  ): Promise<BuddyTalkResponse<TData>> {
     const url = this.getUrl(request);
-    const response = await this.http.put<BuddyTalkResponse<TData>>(url, request.body).toPromise();
+    const response = await this.http
+      .put<BuddyTalkResponse<TData>>(url, request.body)
+      .toPromise();
     if (!response) {
       throw new Error('nenhum retorno da API.');
     }
     return response;
   }
 
-  async delete<TData>(request: BuddyTalkRequest): Promise<BuddyTalkResponse<TData>> {
+  async delete<TData>(
+    request: BuddyTalkRequest
+  ): Promise<BuddyTalkResponse<TData>> {
     const url = this.getUrl(request);
     const options = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }),
-      body: request.body
+      body: request.body,
     };
-    const response = await this.http.delete<BuddyTalkResponse<TData>>(url, options).toPromise();
+    const response = await this.http
+      .delete<BuddyTalkResponse<TData>>(url, options)
+      .toPromise();
     if (!response) {
       throw new Error('nenhum retorno da API.');
     }

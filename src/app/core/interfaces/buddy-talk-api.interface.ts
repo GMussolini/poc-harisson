@@ -1,3 +1,4 @@
 export enum BuddyTalkApi {
-  ThothApi
+  LangchainApi,
+  CognisyncApi
 }

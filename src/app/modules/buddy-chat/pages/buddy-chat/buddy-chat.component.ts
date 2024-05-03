@@ -46,7 +46,7 @@ export class BuddyChatComponent implements AfterViewInit {
     this.messagesMed = [];
     this.messagesPoc = [];
     this.sessionIdHarrison =
-      (await this._buddyService.startSessionPoc()).session_id || '';
+      (await this._buddyService.startSessionPoc()).result.id || '';
     this.sessionIdMed =
       (await this._buddyService.startSessionMed()).session_id || '';
     this.isLoading = false;
@@ -100,9 +100,9 @@ export class BuddyChatComponent implements AfterViewInit {
       });
 
       (
-        await this._buddyService.getStreamData(this.sessionIdHarrison, promp)
-      ).subscribe((data) => {
-        this.responsePoc.resposta = data;
+        await this._buddyService.InteractionWithAssistant(this.sessionIdHarrison, promp)
+      ).subscribe((data: any) => {
+        this.responsePoc.resposta = data.result.content.text.value;
         this.isLoading = false;
         let messageBotPoc: MessageMed = {
           userName: 'Harrison',

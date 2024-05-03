@@ -17,12 +17,12 @@ export class BuddyChatService {
 
   async startSessionPoc(): Promise<any> {
     const request: BuddyTalkRequest = {
-      buddyApi: BuddyTalkApi.ThothApi,
-      resource: `chat/start-session/${1}/${'poc_livro'}`,
+      buddyApi: BuddyTalkApi.CognisyncApi,
+      resource: `medAI/create-chat-with-assistant`,
     };
 
     try {
-      const response = await this.buddyApi.get<any>(request);
+      const response = await this.buddyApi.post<any>(request);
       return response;
     } catch (exception: unknown) {
       if (
@@ -41,7 +41,7 @@ export class BuddyChatService {
 
   async startSessionMed(): Promise<any> {
     const request: BuddyTalkRequest = {
-      buddyApi: BuddyTalkApi.ThothApi,
+      buddyApi: BuddyTalkApi.LangchainApi,
       resource: `chat/start-session/${1}/${'chat'}`,
     };
 
@@ -67,14 +67,44 @@ export class BuddyChatService {
     const endpoint =
       'https://homol3.medgrupo.com.br/med-ai/langchain-service/chat/stream-answer/';
     const body = { session_id: sessionId, text: text };
-    return this.http.post(endpoint, body, {
-      observe: 'events',
-      responseType: 'text'
-    }).pipe(
-      filter(event => event.type === HttpEventType.Response),
-      map(event => {
-        return (event as any).body;
+    return this.http
+      .post(endpoint, body, {
+        observe: 'events',
+        responseType: 'text',
       })
-    );
+      .pipe(
+        filter((event) => event.type === HttpEventType.Response),
+        map((event) => {
+          return (event as any).body;
+        })
+      );
+  }
+
+  async InteractionWithAssistant(
+    sessionId: string,
+    text: string
+  ): Promise<any> {
+    const request: BuddyTalkRequest = {
+      buddyApi: BuddyTalkApi.LangchainApi,
+      resource: `medAI/interaction-with-assistant`,
+      body: { threadId: sessionId, prompt: text },
+    };
+
+    try {
+      const response = await this.buddyApi.post<any>(request);
+      return response;
+    } catch (exception: unknown) {
+      if (
+        typeof exception === 'object' &&
+        exception !== null &&
+        'error' in exception
+      ) {
+        throw this.buddyApi.getErrorMessage(
+          (exception as { error: any }).error
+        );
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
   }
 }
