@@ -1,7 +1,3 @@
-export interface ResponseMedModel {
-  resposta: string,
-}
-
-export interface ResponsePocModel {
+export interface ResponseModel {
   resposta: string,
 }

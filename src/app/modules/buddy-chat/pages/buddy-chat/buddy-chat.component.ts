@@ -5,10 +5,7 @@ import { BuddyChatService } from '../../services/buddy-chat.service';
 import { ModalResumoReferenciaComponent } from '../../components/modal-resumo-referencia/modal-resumo-referencia.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import {
-  ResponseMedModel,
-  ResponsePocModel,
-} from '../../types/response-model.type';
+import { ResponseModel } from '../../types/response-model.type';
 
 @Component({
   selector: 'app-buddy-chat',
@@ -23,8 +20,10 @@ export class BuddyChatComponent implements AfterViewInit {
   ) {}
 
   async ngAfterViewInit(): Promise<void> {
-    this.sessionIdMed = (await this._buddyService.startSessionMed()) || '';
-    this.sessionIdHarrison = (await this._buddyService.startSessionPoc()) || '';
+    this.sessionIdMed =
+      (await this._buddyService.startSessionMed()).session_id || '';
+    this.sessionIdHarrison =
+      (await this._buddyService.startSessionPoc()).session_id || '';
   }
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -36,16 +35,20 @@ export class BuddyChatComponent implements AfterViewInit {
   isLoading = false;
   sessionIdMed: string = '';
   sessionIdHarrison: string = '';
-  responseMed: ResponseMedModel = { resposta: '' };
-  responsePoc: ResponsePocModel = { resposta: '' };
+  responseMed: ResponseModel = { resposta: '' };
+  responsePoc: ResponseModel = { resposta: '' };
 
   toggleSidenav(): void {
     this.sidenav.toggle();
   }
   async OnAddNewChat(): Promise<void> {
     this.isLoading = true;
-    this.sessionIdHarrison = (await this._buddyService.startSessionPoc()) || '';
-    this.sessionIdMed = (await this._buddyService.startSessionMed()) || '';
+    this.messagesMed = [];
+    this.messagesPoc = [];
+    this.sessionIdHarrison =
+      (await this._buddyService.startSessionPoc()).session_id || '';
+    this.sessionIdMed =
+      (await this._buddyService.startSessionMed()).session_id || '';
     this.isLoading = false;
   }
   async OnSendPrompt(): Promise<void> {
@@ -69,25 +72,6 @@ export class BuddyChatComponent implements AfterViewInit {
     this.messagesPoc.push(messagePoc);
 
     await this.getResponseModel(this.prompt);
-
-    let messageBotMed: MessageMed = {
-      userName: 'Medrobot',
-      userImage:
-        './../../../../../assets/logo-medgrupo.jpg',
-      date: new Date(),
-      text: this.responseMed.resposta,
-    };
-
-    let messageBotPoc: MessageMed = {
-      userName: 'Medrobot',
-      userImage:
-        './../../../../../assets/logo-medgrupo.jpg',
-      date: new Date(),
-      text: this.responsePoc.resposta,
-    };
-
-    this.messagesMed.push(messageBotMed);
-    this.messagesPoc.push(messageBotPoc);
   }
 
   openDialog(resume: string): void {
@@ -102,19 +86,32 @@ export class BuddyChatComponent implements AfterViewInit {
 
   private async getResponseModel(promp: string): Promise<void> {
     if (promp !== '') {
-      this.responsePoc.resposta = await this._buddyService.streamAwnserPoc(
-        this.sessionIdMed,
-        promp
-      );
-      this.responseMed.resposta = await this._buddyService
-        .streamAwnserMed(this.sessionIdMed, promp)
-        .finally(() => {
-          this.prompt = '';
-          this.isLoading = false;
-        });
+      (
+        await this._buddyService.getStreamData(this.sessionIdMed, promp)
+      ).subscribe((data) => {
+        this.responseMed.resposta = data;
+        let messageBotMed: MessageMed = {
+          userName: 'Medrobot',
+          userImage: './../../../../../assets/logo-medgrupo.jpg',
+          date: new Date(),
+          text: this.responseMed.resposta,
+        };
+        this.messagesMed.push(messageBotMed);
+      });
 
-      console.log(this.responsePoc.resposta);
-      console.log(this.responseMed.resposta);
+      (
+        await this._buddyService.getStreamData(this.sessionIdHarrison, promp)
+      ).subscribe((data) => {
+        this.responsePoc.resposta = data;
+        this.isLoading = false;
+        let messageBotPoc: MessageMed = {
+          userName: 'Harrison',
+          userImage: './../../../../../assets/logo-medgrupo.jpg',
+          date: new Date(),
+          text: this.responsePoc.resposta,
+        };
+        this.messagesPoc.push(messageBotPoc);
+      });
     }
   }
 
