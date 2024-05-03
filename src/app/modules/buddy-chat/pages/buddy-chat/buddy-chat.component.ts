@@ -23,7 +23,7 @@ export class BuddyChatComponent implements AfterViewInit {
     this.sessionIdMed =
       (await this._buddyService.startSessionMed()).session_id || '';
     this.sessionIdHarrison =
-      (await this._buddyService.startSessionPoc()).session_id || '';
+      (await this._buddyService.startSessionPoc()).result.id || '';
   }
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
