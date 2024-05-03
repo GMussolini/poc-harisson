@@ -85,7 +85,7 @@ export class BuddyChatService {
     text: string
   ): Promise<any> {
     const request: BuddyTalkRequest = {
-      buddyApi: BuddyTalkApi.LangchainApi,
+      buddyApi: BuddyTalkApi.CognisyncApi,
       resource: `medAI/interaction-with-assistant`,
       body: { threadId: sessionId, prompt: text },
     };
