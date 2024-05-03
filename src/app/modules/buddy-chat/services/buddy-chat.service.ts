@@ -80,31 +80,10 @@ export class BuddyChatService {
       );
   }
 
-  async InteractionWithAssistant(
-    sessionId: string,
-    text: string
-  ): Promise<any> {
-    const request: BuddyTalkRequest = {
-      buddyApi: BuddyTalkApi.CognisyncApi,
-      resource: `medAI/interaction-with-assistant`,
-      body: { threadId: sessionId, prompt: text },
-    };
-
-    try {
-      const response = await this.buddyApi.post<any>(request);
-      return response;
-    } catch (exception: unknown) {
-      if (
-        typeof exception === 'object' &&
-        exception !== null &&
-        'error' in exception
-      ) {
-        throw this.buddyApi.getErrorMessage(
-          (exception as { error: any }).error
-        );
-      } else {
-        throw new Error('An unexpected error occurred');
-      }
-    }
+  async InteractionWithAssistant(sessionId: string, text: string): Promise<Observable<any>> {
+    const endpoint =
+      'https://homol3.medgrupo.com.br/med-ai/api-cognisync-ia/medAI/interaction-with-assistant';
+    const body = { threadId: sessionId, prompt: text };
+    return this.http.post(endpoint, body);
   }
 }
