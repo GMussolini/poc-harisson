@@ -6,6 +6,7 @@ import { ModalResumoReferenciaComponent } from '../../components/modal-resumo-re
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ResponseModel } from '../../types/response-model.type';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-buddy-chat',
@@ -86,32 +87,40 @@ export class BuddyChatComponent implements AfterViewInit {
 
   private async getResponseModel(promp: string): Promise<void> {
     if (promp !== '') {
-      (
-        await this._buddyService.getStreamData(this.sessionIdMed, promp)
-      ).subscribe((data) => {
-        this.responseMed.resposta = data;
-        let messageBotMed: MessageMed = {
-          userName: 'Medrobot',
-          userImage: './../../../../../assets/logo-medgrupo.jpg',
-          date: new Date(),
-          text: this.responseMed.resposta,
-        };
-        this.messagesMed.push(messageBotMed);
-      });
+      const streamData$ = this._buddyService.getStreamData(
+        this.sessionIdMed,
+        promp
+      );
+      const interactionWithAssistant$ =
+        this._buddyService.InteractionWithAssistant(
+          this.sessionIdHarrison,
+          promp
+        );
 
-      (
-        await this._buddyService.InteractionWithAssistant(this.sessionIdHarrison, promp)
-      ).subscribe((data: any) => {
-        this.prompt = '';
-        this.responsePoc.resposta = data.result.content[0].text.value;
-        this.isLoading = false;
-        let messageBotPoc: MessageMed = {
-          userName: 'Harrison',
-          userImage: './../../../../../assets/logo-medgrupo.jpg',
-          date: new Date(),
-          text: this.responsePoc.resposta,
-        };
-        this.messagesPoc.push(messageBotPoc);
+      forkJoin([streamData$, interactionWithAssistant$]).subscribe({
+        next: ([dataMed, dataPoc]) => {
+          this.responseMed.resposta = dataMed;
+          let messageBotMed: MessageMed = {
+            userName: 'Medrobot',
+            userImage: './../../../../../assets/logo-medgrupo.jpg',
+            date: new Date(),
+            text: this.responseMed.resposta,
+          };
+          this.messagesMed.push(messageBotMed);
+
+          this.responsePoc.resposta = dataPoc.result.content[0].text.value;
+          let messageBotPoc: MessageMed = {
+            userName: 'Harrison',
+            userImage: './../../../../../assets/logo-medgrupo.jpg',
+            date: new Date(),
+            text: this.responsePoc.resposta,
+          };
+          this.messagesPoc.push(messageBotPoc);
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.prompt = '';
+        },
       });
     }
   }

@@ -80,10 +80,10 @@ export class BuddyChatService {
       );
   }
 
-  async InteractionWithAssistant(
+  InteractionWithAssistant(
     sessionId: string,
     text: string
-  ): Promise<Observable<any>> {
+  ): Observable<any> {
     const endpoint =
       'https://homol3.medgrupo.com.br/med-ai/api-cognisync-ia/medAI/interaction-with-assistant';
 
