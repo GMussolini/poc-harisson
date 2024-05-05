@@ -102,6 +102,7 @@ export class BuddyChatComponent implements AfterViewInit {
       (
         await this._buddyService.InteractionWithAssistant(this.sessionIdHarrison, promp)
       ).subscribe((data: any) => {
+        this.prompt = '';
         this.responsePoc.resposta = data.result.content[0].text.value;
         this.isLoading = false;
         let messageBotPoc: MessageMed = {

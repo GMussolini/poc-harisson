@@ -208,7 +208,6 @@ mat-sidenav, mat-sidenav-content {
   flex-grow: 1;
   border: none;
   outline: none;
-  padding: 0px 10px;
   font-size: 16px;
 }
 
