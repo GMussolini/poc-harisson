@@ -1,4 +1,4 @@
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, filter, map } from 'rxjs';
 import { BuddyTalkApiService } from 'src/app/core/http/buddy-talk-api.service';
@@ -80,10 +80,17 @@ export class BuddyChatService {
       );
   }
 
-  async InteractionWithAssistant(sessionId: string, text: string): Promise<Observable<any>> {
+  async InteractionWithAssistant(
+    sessionId: string,
+    text: string
+  ): Promise<Observable<any>> {
     const endpoint =
       'https://homol3.medgrupo.com.br/med-ai/api-cognisync-ia/medAI/interaction-with-assistant';
-    const body = { threadId: sessionId, prompt: text };
-    return this.http.post(endpoint, body);
+
+    const params = new HttpParams()
+      .set('threadId', sessionId)
+      .set('prompt', text);
+
+    return this.http.post(endpoint, null, { params: params });
   }
 }
